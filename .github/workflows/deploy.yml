@@ -1,0 +1,44 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - production
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup SSH Connection
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: Deploy to EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+
+          # Stop existing PM2 process if running
+          pm2 stop /var/www/znz/SMAC-Frontend/src/index.js || true
+          cd /var/www/znz/SMAC-Frontend
+
+            # Pull latest changes
+            git pull origin production
+
+            # Install dependencies using pnpm
+            pnpm install --production
+
+            # Build React app using pnpm
+            pnpm run build
+
+
+            # Start or restart PM2 process to serve the build
+            pm2 start "serve -s build -l 3000" --name /var/www/znz/SMAC-Frontend/src/index.js
+
+            # Save PM2 process list so it restarts after a reboot
+            pm2 save
+
+            exit
+          EOF

@@ -1,6 +1,6 @@
 import axios from "axios";
 // testing data
-const base_url = "http://192.168.1.58:8080";
+// const base_url = "http://192.168.1.58:8080";
 // const base_url = "http://localhost:8080";
 // const base_url = "https://smac-backend-8004ef0e88af.herokuapp.com";
 // local  url
@@ -9,7 +9,7 @@ const base_url = "http://192.168.1.58:8080";
 const axiosBaseClient = (type) => {
   return axios.create({
     // baseURL: type === "auth" ? auth_url : base_url,
-    baseURL: base_url,
+    baseURL: "",
   });
 };
 const axiosClient = axiosBaseClient("base");
