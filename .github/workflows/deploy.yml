@@ -16,29 +16,32 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-      - name: Deploy to EC2
-        run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          - name: Deploy to EC2
+          run: |
+            ssh -o ServerAliveInterval=60 -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+              cd /var/www/znz/SMAC-Frontend
 
-          # Stop existing PM2 process if running
-          pm2 stop /var/www/znz/SMAC-Frontend/src/index.js || true
-          cd /var/www/znz/SMAC-Frontend
+              # Pull latest changes
+              git pull origin production
 
-            # Pull latest changes
-            git pull origin production
+              # Install dependencies
+              pnpm install --production > pnpm-install.log 2>&1 &
 
-            # Install dependencies using pnpm
-            pnpm install --production
+              # Wait for install to complete
+              wait
 
-            # Build React app using pnpm
-            pnpm run build
+              # Build React app
+              pnpm run build > build.log 2>&1 &
 
+              # Wait for build to complete
+              wait
 
-            # Start or restart PM2 process to serve the build
-            pm2 start "serve -s build -l 3000" --name /var/www/znz/SMAC-Frontend/src/index.js
+              # Stop existing PM2 process if running
+              pm2 stop react-app || true
 
-            # Save PM2 process list so it restarts after a reboot
-            pm2 save
+              # Start PM2 to serve the app
+              pm2 start "serve -s build -l 3000"
 
-            exit
-          EOF
+              # Save PM2 process list
+              pm2 save
+            EOF
