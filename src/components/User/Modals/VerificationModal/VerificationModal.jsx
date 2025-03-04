@@ -23,9 +23,6 @@ const VerificationModal = ({ open, close }) => {
     },
   };
 
-  useEffect(() => {
-    //console.log("open");
-  }, []);
   const handleCommentClose = () => {
     close(false);
   };

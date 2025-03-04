@@ -15,8 +15,6 @@ const Gender = () => {
   const dispatch = useDispatch();
   // Set default value of female when component mounts
   dispatch(setGender({ data: value }));
-  React.useEffect(() => {}, []); // Empty dependency array to run only once on mount
-
   const handleChange = (event) => {
     const selectedGender = event.target.value;
     //console.log(selectedGender, "Selected Gender");

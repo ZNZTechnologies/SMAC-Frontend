@@ -30,7 +30,6 @@ const Chat = () => {
   const dispatch = useDispatch();
   const { isNewChat } = useSelector((state) => state.selectedChat);
   const { sendMessage } = useSocket();
-  const { conversations } = useSelector((state) => state.conversations);
   const { fetchData } = useFetch();
   const [open, setOpen] = useState(false);
   const getAllChatOfThisConversation = async (chatId) => {
