@@ -32,10 +32,11 @@ jobs:
             git pull origin production
 
             # Install dependencies using pnpm (log output to prevent timeout)
-            pnpm install --production | tee pnpm-install.log
+            pnpm install --production --legacy-peer-deps | tee pnpm-install.log
 
             # Build React app
-            pnpm run build | tee build.log
+            # pnpm run build | tee build.log
+            NODE_OPTIONS="--max-old-space-size=4096" pnpm run build | tee build.log
 
             # Start or restart PM2 process and save the process
             pm2 start "serve -s build -l 3000" --name react-app
