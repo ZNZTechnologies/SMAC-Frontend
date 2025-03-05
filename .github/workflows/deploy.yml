@@ -37,7 +37,7 @@ jobs:
             # Build React app
             pnpm run build | tee build.log
 
-            # Start or restart PM2 process
+            # Start or restart PM2 process and save the process
             pm2 start "serve -s build -l 3000" --name react-app
             pm2 save
 
