@@ -22,7 +22,7 @@ function getSocket(loginToken) {
 
     try {
       if (userToken) {
-        return (socket = io("ws://3.218.187.2:8080", {
+        return (socket = io("ws://smacltd.com", {
           // return (socket = io(`wss://www.smacltd.com`, {
           withCredentials: true, // Ensures cookies are sent with requests
           transports: ["websocket"], // Use WebSocket transport

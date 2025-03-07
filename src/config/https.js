@@ -1,6 +1,6 @@
 import axios from "axios";
 // testing data
-const base_url = "https://3.218.187.2:8080";
+const base_url = "https://smacltd.com";
 // const base_url = "http://localhost:8080";
 // const base_url = "https://smac-backend-8004ef0e88af.herokuapp.com";
 // local  url
