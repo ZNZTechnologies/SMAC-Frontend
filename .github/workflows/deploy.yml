@@ -23,24 +23,21 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o ServerAliveInterval=60 -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            # Stop existing PM2 process
-            pm2 stop react-app || true
-
-            cd /var/www/znz/SMAC-Frontend
-
-            # Pull latest changes
+            # pm2 stop smac-frontend
+            cd /var/www/SMAC-Frontend
+            sudo chown -R ubuntu:ubuntu .
+            sudo chmod -R 755 .
             git pull origin production
 
             # Install dependencies using pnpm (log output to prevent timeout)
             pnpm install --production --legacy-peer-deps | tee pnpm-install.log
 
             # Build React app
-            # pnpm run build | tee build.log
-            NODE_OPTIONS="--max-old-space-size=4096" pnpm run build | tee build.log
+            pnpm run build | tee build.log
+            # NODE_OPTIONS="--max-old-space-size=4096" pnpm run build | tee build.log
 
             # Start or restart PM2 process and save the process
-            pm2 start "serve -s build -l 3000" --name react-app
-            pm2 save
+            pm2 start "serve -s build -l 3000" --name smac-frontend
 
             exit
           EOF
